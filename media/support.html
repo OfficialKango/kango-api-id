@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MATRIX API - Service | Support</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Get support for MATRIX API - Service. Contact us for assistance.">
+    <link rel="icon" href="https://matrix-api-dashboard.vercel.app/images/adiza.jpg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <style>
+        /* Re-using your existing styles for consistency */
+        :root {
+            --primary: #00f7ff;
+            --secondary: #0066ff;
+            --accent: #7b00ff;
+            --dark: #0a0a1a;
+            --light: #ffffff;
+            --highlight: #ff00ff;
+            --sidebar-width: 280px;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(0, 247, 255, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(0, 247, 255, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 247, 255, 0); }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes textGlow {
+            0%, 100% { text-shadow: 0 0 5px var(--primary); }
+            50% { text-shadow: 0 0 20px var(--primary); }
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--dark);
+            color: var(--light);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column; /* Changed to column for page layout */
+        }
+
+        #particles-js {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at center, rgba(0, 20, 40, 0.9) 0%, var(--dark) 100%);
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 70px 20px 20px; /* Adjusted padding */
+            width: 100%;
+            box-sizing: border-box; /* Include padding in width */
+            animation: fadeIn 0.8s ease-out; /* Main content animation */
+        }
+
+        /* Top Navigation - Replicated from your index.html for consistency */
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: rgba(10, 10, 30, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            z-index: 900;
+        }
+
+        .menu-toggle {
+            font-size: 1.5rem;
+            color: var(--light);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .menu-toggle:hover {
+            color: var(--primary);
+        }
+
+        .page-title {
+            font-size: 1.2rem;
+            color: var(--light);
+            margin: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .page-title img {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        /* Support Page Specific Styles */
+        .support-section {
+            background: rgba(20, 20, 40, 0.6);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px auto; /* Center the section */
+            max-width: 800px; /* Limit width for better readability */
+            box-shadow: 0 5px 25px rgba(0, 247, 255, 0.2);
+            border-left: 5px solid var(--primary);
+            animation: fadeIn 1s ease-out;
+            text-align: center; /* Center content within support section */
+        }
+
+        .support-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .support-header h1 {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+            animation: textGlow 3s infinite alternate;
+        }
+
+        .support-header p {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+        }
+
+        /* Styles for the new image */
+        .profile-image-container {
+            margin-bottom: 25px; /* Space below the image */
+            display: flex;
+            justify-content: center; /* Center the image horizontally */
+        }
+
+        .profile-image {
+            width: 120px; /* Adjust size as needed */
+            height: 120px; /* Adjust size as needed */
+            border-radius: 50%; /* Makes it circular */
+            object-fit: cover; /* Ensures image covers the circle */
+            border: 3px solid var(--primary); /* A nice border */
+            box-shadow: 0 0 20px rgba(0, 247, 255, 0.6); /* Glow effect */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: float 4s ease-in-out infinite; /* Floating animation */
+        }
+
+        .profile-image:hover {
+            transform: scale(1.08);
+            box-shadow: 0 0 30px rgba(0, 247, 255, 0.8);
+        }
+
+        .contact-form {
+            display: grid;
+            gap: 20px;
+            text-align: left; /* Align form elements to the left */
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="email"],
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid rgba(0, 247, 255, 0.3);
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            color: var(--light);
+            font-size: 1rem;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input[type="text"]:focus,
+        .form-group input[type="email"]:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(0, 247, 255, 0.4);
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--dark);
+            font-weight: bold;
+            padding: 15px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            display: block; /* Make it a block element */
+            width: 100%; /* Full width */
+            margin-top: 20px;
+            animation: pulse 2s infinite; /* Re-using pulse animation */
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 247, 255, 0.4);
+        }
+
+        .form-message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 1rem;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .form-message.success {
+            background-color: rgba(0, 255, 0, 0.2);
+            color: #00ff00;
+            opacity: 1;
+        }
+
+        .form-message.error {
+            background-color: rgba(255, 0, 0, 0.2);
+            color: #ff0000;
+            opacity: 1;
+        }
+
+        /* Footer - Replicated from your index.html */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+            margin-top: auto; /* Push footer to the bottom */
+        }
+
+        .footer a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Music Player - Replicated for consistency */
+        .music-player {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .music-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--dark);
+            border: none;
+            border-radius: 50px;
+            padding: 12px 20px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 247, 255, 0.3);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .music-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 247, 255, 0.4);
+        }
+
+        .music-btn i {
+            margin-right: 8px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            .support-section {
+                margin: 15px;
+                padding: 20px;
+            }
+            .support-header h1 {
+                font-size: 2rem;
+            }
+            .support-header p {
+                font-size: 1rem;
+            }
+            .profile-image {
+                width: 100px;
+                height: 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div>
+    <div class="top-nav">
+        <a href="../docs/index.html" class="menu-toggle"> <i class="fas fa-arrow-left"></i>
+        </a>
+        <h2 class="page-title">
+            <img src="https://matrix-api-documentation.vercel.app/images/adiza.jpg" alt="Matrix Premium API - Service Logo"> Support & Contact
+        </h2>
+        <div></div>
+    </div>
+
+    <div class="main-content">
+        <div class="support-section">
+            <div class="support-header">
+                <div class="profile-image-container">
+                    <img src="../images/queenzy.jpg" alt="Queenzy" class="profile-image">
+                </div>
+                <h1>Need Assistance?</h1>
+                <p>We're here to help! Please fill out the form below with your inquiry, and we'll get back to you as soon as possible.</p>
+            </div>
+            <form id="contactForm" action="https://formspree.io/f/xeokkbzl" method="POST" class="contact-form">
+                <div class="form-group">
+                    <label for="name">Your Name:</label>
+                    <input type="text" id="name" name="name" required placeholder="Enter your full name">
+                </div>
+                <div class="form-group">
+                    <label for="email">Your Email:</label>
+                    <input type="email" id="email" name="_replyto" required placeholder="Your email address">
+                </div>
+                <div class="form-group">
+                    <label for="subject">Subject:</label>
+                    <input type="text" id="subject" name="subject" required placeholder="Topic of your inquiry">
+                </div>
+                <div class="form-group">
+                    <label for="message">Message:</label>
+                    <textarea id="message" name="message" required placeholder="Describe your issue or question..."></textarea>
+                </div>
+                <button type="submit" class="submit-btn">Send Message <i class="fas fa-paper-plane"></i></button>
+                <div id="formStatusMessage" class="form-message"></div>
+            </form>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>© 2025 - 2030 <a href="https://whatsapp.com/channel/0029Vb5JJ438kyyGlFHTyZ0n">MATRIX API - Service </a> | All Rights Reserved</p>
+    </div>
+
+    <div class="music-player">
+        <audio id="backgroundMusic" autoplay loop>
+            <source src="/media/Blackstone.mp3">
+        </audio>
+        <button id="toggleMusic" class="music-btn">
+            <i class="fas fa-pause"></i> <span>Pause Music</span>
+        </button>
+    </div>
+
+    <script>
+        // Initialize particles.js
+        particlesJS("particles-js", {
+            "particles": {
+                "number": { "value": 80, "density": { "enable": true, "value_area": 800 } },
+                "color": { "value": "#00f7ff" },
+                "shape": { "type": "circle", "stroke": { "width": 0, "color": "#000000" } },
+                "opacity": { "value": 0.5, "random": false, "anim": { "enable": false, "speed": 1, "opacity_min": 0.1, "sync": false } },
+                "size": { "value": 3, "random": true, "anim": { "enable": false, "speed": 40, "size_min": 0.1, "sync": false } },
+                "line_linked": { "enable": true, "distance": 150, "color": "#00f7ff", "opacity": 0.2, "width": 1 },
+                "move": { "enable": true, "speed": 2, "direction": "none", "random": false, "straight": false, "out_mode": "out", "bounce": false, "attract": { "enable": false, "rotateX": 600, "rotateY": 1200 } }
+            },
+            "interactivity": {
+                "detect_on": "canvas",
+                "events": {
+                    "onhover": { "enable": true, "mode": "grab" },
+                    "onclick": { "enable": true, "mode": "push" },
+                    "resize": true
+                },
+                "modes": {
+                    "grab": { "distance": 140, "line_linked": { "opacity": 0.5 } },
+                    "push": { "particles_nb": 4 }
+                }
+            },
+            "retina_detect": true
+        });
+
+        // Music player functionality (copied from your index.html)
+        const audio = document.getElementById('backgroundMusic');
+        const toggleButton = document.getElementById('toggleMusic');
+        toggleButton.addEventListener('click', () => {
+            if (audio.paused) {
+                audio.play();
+                toggleButton.innerHTML = '<i class="fas fa-pause"></i><span>Pause Music</span>';
+            } else {
+                audio.pause();
+                toggleButton.innerHTML = '<i class="fas fa-play"></i><span>Play Music</span>';
+            }
+        });
+
+        // Formspree Integration
+        const form = document.getElementById('contactForm');
+        const formStatusMessage = document.getElementById('formStatusMessage');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault(); // Prevent default form submission
+
+            const formData = new FormData(form);
+            try {
+                const response = await fetch(form.action, {
+                    method: form.method,
+                    body: formData,
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    formStatusMessage.textContent = 'Message sent successfully! We\'ll get back to you shortly.';
+                    formStatusMessage.className = 'form-message success';
+                    form.reset(); // Clear the form
+                } else {
+                    const data = await response.json();
+                    if (data.errors) {
+                        formStatusMessage.textContent = data.errors.map(error => error.message).join(', ');
+                    } else {
+                        formStatusMessage.textContent = 'Oops! There was a problem sending your message.';
+                    }
+                    formStatusMessage.className = 'form-message error';
+                }
+            } catch (error) {
+                formStatusMessage.textContent = 'There was an error connecting to the server. Please try again later.';
+                formStatusMessage.className = 'form-message error';
+            }
+            // Ensure message is visible even if it quickly changes
+            setTimeout(() => {
+                formStatusMessage.style.opacity = 1;
+            }, 50);
+        });
+    </script>
+</body>
+</html>
