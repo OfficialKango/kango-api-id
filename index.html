@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MATRIX-API | STATUS DASHBOARD</title>
+  <link rel="shortcut icon" href="images/queenzy.jpg" type="image/x-icon">
+  <script src="js/particles.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* --- Core Variables & Global Styles (from previous project) --- */
+    :root {  
+        --color-primary: #00e6e6; /* Slightly softer Neon Cyan */
+        --color-secondary: #cc00cc; /* Slightly softer Neon Magenta */
+        --color-accent: #6a00ff; /* Deep Purple */
+        --color-text-light: #f0f0f0; /* Near white for general text */
+        --color-text-muted: rgba(240, 240, 240, 0.7); /* Muted text */
+        --color-bg-dark: #07071a; /* Very Dark Blue-Black, slightly darker */
+        --color-bg-medium: #15152a; /* Slightly Lighter Dark Blue-Black */
+        --color-bg-glass: rgba(15, 15, 30, 0.9); /* Darker glass for main elements */
+        --color-bg-overlay: rgba(0, 0, 0, 0.88); /* Full screen overlay, a bit more opaque */
+
+        --border-radius-main: 15px; /* Slightly smaller for 'cute' */
+        --border-radius-small: 8px;
+        --border-radius-pill: 25px; /* New: for pill shapes */
+        --border-radius-circle: 50%;
+        --spacing-gap: 25px; /* Slightly reduced for a tighter, cleaner look */
+        
+        --glow-primary: 0 0 10px var(--color-primary), 0 0 20px var(--color-secondary);
+        --shadow-subtle: 0 4px 15px rgba(0, 0, 0, 0.2); /* Softer shadows */
+        --shadow-deep: 0 8px 25px rgba(0, 0, 0, 0.5); /* Still impactful but not overwhelming */
+
+        --transition-fast: 0.2s ease-out;
+        --transition-normal: 0.35s ease-in-out;
+        --transition-slow: 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+
+        /* Status Colors from previous project, adapting to current status page needs */
+        --status-success: #4CAF50; /* Green */
+        --status-warning: #FFC107; /* Amber */
+        --status-danger: #F44336; /* Red */
+    }
+
+    /* --- Global Keyframe Animations (from previous project) --- */
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    @keyframes slideInUp {
+        from { transform: translateY(20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+    @keyframes pulseGlowSubtle {
+        0% { box-shadow: 0 0 0 0 rgba(0, 230, 230, 0.3); }
+        70% { box-shadow: 0 0 0 15px rgba(0, 230, 230, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(0, 230, 230, 0); }
+    }
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+    /* Floating animation for the dashboard container */
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    
+    /* Neon glow for text (from original, adapted to new variables) */
+    @keyframes neon-glow {
+      0%, 100% { text-shadow: 0 0 5px var(--color-primary), 0 0 10px var(--color-primary); }
+      50% { text-shadow: 0 0 10px var(--color-primary), 0 0 20px var(--color-primary); }
+    }
+
+    /* --- Body & Particle Background (from previous project) --- */
+    body {
+      font-family: 'Segoe UI', 'Roboto', sans-serif; /* More modern font stack */
+      background-color: var(--color-bg-dark);
+      color: var(--color-text-light);
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column; /* Changed to column to allow content to flex correctly */
+      align-items: center; /* Center content horizontally */
+      justify-content: center; /* Center content vertically */
+      animation: fadeIn 0.8s ease-out;
+    }
+    
+    #particles-js {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      background: radial-gradient(circle at center, rgba(0, 20, 40, 0.95) 0%, var(--color-bg-dark) 100%);
+    }
+    
+    /* --- Dashboard Container --- */
+    .dashboard-container {
+      background: var(--color-bg-glass); /* Using glass effect */
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(138, 43, 226, 0.2); /* Using secondary color for border */
+      box-shadow: var(--shadow-deep); /* Deeper shadow */
+      width: 95%;
+      max-width: 800px;
+      border-radius: var(--border-radius-main); /* Consistent border radius */
+      overflow: hidden;
+      position: relative;
+      margin: 1rem auto; /* Ensures it's centered if body isn't a flex container */
+      animation: float 6s ease-in-out infinite; /* Keep floating animation */
+    }
+    
+    .dashboard-header {
+        padding: 1.5rem; /* Adjusted padding */
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.5rem; /* Consistent spacing */
+    }
+
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: 1rem; /* Consistent gap */
+    }
+
+    .header-logo {
+        width: 3rem; /* Consistent size */
+        height: 3rem;
+        border-radius: var(--border-radius-circle);
+        border: 2px solid var(--color-secondary); /* Consistent border */
+        box-shadow: 0 0 8px rgba(204, 0, 204, 0.5); /* Glow for logo */
+    }
+
+    .header-title {
+        font-size: 1.5rem; /* Consistent font size */
+        font-weight: 700;
+        color: var(--color-text-light);
+        animation: neon-glow 3s ease-in-out infinite; /* Apply neon glow */
+    }
+
+    .header-version {
+        color: var(--color-text-muted); /* Consistent muted text color */
+        font-size: 0.875rem;
+    }
+
+    .docs-btn {
+        background: linear-gradient(45deg, var(--color-primary), var(--color-secondary)); /* Consistent gradient */
+        color: var(--color-bg-dark); /* Dark text on bright button */
+        font-weight: bold;
+        position: relative;
+        overflow: hidden;
+        transition: all var(--transition-normal); /* Consistent transition */
+        box-shadow: var(--shadow-subtle); /* Subtler shadow */
+        padding: 0.6rem 1.2rem; /* Adjusted padding */
+        font-size: 0.9rem; /* Consistent font size */
+        border-radius: var(--border-radius-small); /* Consistent border radius */
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .docs-btn:hover {
+        transform: translateY(-3px); /* Stronger hover effect */
+        box-shadow: 0 8px 25px rgba(0, 230, 230, 0.6); /* More prominent shadow on hover */
+    }
+    
+    .docs-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: 0.5s;
+    }
+    
+    .docs-btn:hover::before {
+      left: 100%;
+    }
+
+    /* --- Status Cards Grid --- */
+    .status-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: var(--spacing-gap); /* Consistent gap */
+        padding: 0 1.5rem 1.5rem 1.5rem; /* Padding for the grid */
+    }
+
+    @media (min-width: 768px) {
+        .status-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    
+    .status-card {
+      background: var(--color-bg-medium); /* Consistent background */
+      border-radius: var(--border-radius-main); /* Consistent border radius */
+      border: 1px solid rgba(0, 230, 230, 0.15); /* Consistent border */
+      transition: all var(--transition-normal); /* Consistent transition */
+      position: relative;
+      overflow: hidden;
+      padding: 1.5rem; /* Consistent padding */
+      box-shadow: var(--shadow-subtle); /* Consistent shadow */
+    }
+    
+    .status-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px; /* Thicker top border */
+      background: linear-gradient(90deg, var(--color-primary), var(--color-secondary)); /* Consistent gradient */
+      opacity: 0.8; /* More prominent */
+    }
+    
+    .status-card:hover {
+      transform: translateY(-5px); /* Consistent hover effect */
+      box-shadow: 0 10px 30px rgba(0, 230, 230, 0.25); /* Stronger hover shadow */
+      border-color: var(--color-primary); /* Highlight border on hover */
+    }
+    
+    .status-card:active {
+      transform: translateY(-2px);
+      box-shadow: 0 0 30px rgba(0, 240, 255, 0.4); /* Keep active glow */
+    }
+
+    .card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+    }
+    
+    .card-title {
+        font-weight: 600;
+        color: var(--color-text-muted); /* Muted title color */
+        font-size: 0.95rem; /* Adjusted font size */
+        text-transform: uppercase; /* Consistent uppercase */
+        letter-spacing: 0.5px;
+    }
+    
+    .card-icon {
+        font-size: 1.2rem; /* Adjusted icon size */
+        color: var(--color-primary); /* Consistent icon color */
+    }
+    
+    .card-value {
+        font-size: 2.2rem; /* Consistent large value font size */
+        font-weight: bold;
+        color: var(--color-text-light); /* Light text for values */
+        text-align: left; /* Align values left */
+        word-break: break-all; /* Ensure long values break */
+    }
+
+    .progress-bar {
+      height: 8px; /* Thicker progress bar */
+      background: rgba(0, 230, 230, 0.1); /* Lighter background for empty bar */
+      border-radius: var(--border-radius-small); /* Consistent border radius */
+      overflow: hidden;
+      margin-top: 1rem; /* Adjusted margin */
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--color-primary), var(--color-secondary)); /* Consistent gradient */
+      transition: width 0.5s ease;
+      border-radius: var(--border-radius-small); /* Consistent border radius */
+    }
+    
+    /* Specific styles for system health details */
+    .system-health-details {
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem; /* Spacing between health items */
+    }
+
+    .health-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.95rem;
+    }
+
+    .health-label {
+        color: var(--color-text-muted);
+    }
+
+    .health-value {
+        font-weight: 500;
+        color: var(--color-text-light);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .api-status-indicator {
+      width: 12px; /* Larger indicator */
+      height: 12px;
+      border-radius: 50%;
+      background-color: var(--status-success); /* Use CSS variable */
+      box-shadow: 0 0 8px var(--status-success); /* Glow for indicator */
+      animation: pulseGlowSubtle 1.5s infinite ease-out; /* Apply subtle pulse */
+    }
+
+    .api-status-indicator.offline {
+        background-color: var(--status-danger);
+        box-shadow: 0 0 8px var(--status-danger);
+    }
+    
+    /* --- Footer Section --- */
+    .dashboard-footer {
+        border-top: 1px solid rgba(0, 230, 230, 0.1); /* Consistent border */
+        padding: 1rem 1.5rem; /* Adjusted padding */
+        display: flex;
+        flex-direction: column; /* Stack on small screens */
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(0, 0, 0, 0.2); /* Slightly darker background for footer */
+        gap: 1rem; /* Gap for stacked elements */
+    }
+    @media (min-width: 640px) {
+        .dashboard-footer {
+            flex-direction: row; /* Row on larger screens */
+        }
+    }
+
+    .status-message {
+        font-size: 0.85rem; /* Smaller font for message */
+        color: var(--color-text-muted); /* Muted color */
+    }
+
+    .refresh-btn {
+        background: none;
+        border: 1px solid var(--color-primary); /* Border for refresh button */
+        color: var(--color-primary);
+        padding: 0.6rem 1.2rem;
+        border-radius: var(--border-radius-small);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all var(--transition-fast);
+        cursor: pointer;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+    .refresh-btn:hover {
+        background: var(--color-primary);
+        color: var(--color-bg-dark);
+        box-shadow: 0 0 12px rgba(0, 230, 230, 0.5);
+    }
+    
+    /* --- Music Player (Floating, from previous project) --- */
+    .music-player-floating {
+        position: fixed;
+        bottom: 25px;
+        right: 25px; /* Changed to right for consistency with other project */
+        z-index: 950;
+    }
+    .music-player-floating .music-toggle-btn {
+        background: none; /* Make background transparent initially */
+        border: 1px solid var(--color-primary);
+        color: var(--color-primary);
+        width: 50px;
+        height: 50px;
+        border-radius: var(--border-radius-circle);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 1.3rem;
+        cursor: pointer;
+        box-shadow: 0 6px 20px rgba(0, 230, 230, 0.4);
+        animation: pulseGlowSubtle 3s infinite ease-out;
+        transition: all var(--transition-normal); /* Add transition for background */
+    }
+    .music-player-floating .music-toggle-btn:hover {
+        background: var(--color-primary); /* Fill background on hover */
+        color: var(--color-bg-dark);
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 8px 25px rgba(0, 230, 230, 0.6);
+        animation: none;
+    }
+
+    /* --- Responsive Adjustments --- */
+    @media (max-width: 640px) {
+      .dashboard-container {
+        width: 100%;
+        border-radius: 0;
+        margin: 0; /* Remove margin to fill screen */
+      }
+      .dashboard-header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 1rem;
+      }
+      .docs-btn {
+          width: 100%;
+          justify-content: center;
+          padding: 0.8rem 1.2rem;
+      }
+      .status-grid {
+        padding: 0 1rem 1rem 1rem; /* Adjust padding for small screens */
+        gap: 1rem; /* Smaller gap */
+      }
+      .status-card {
+        padding: 1rem; /* Smaller card padding */
+      }
+      .card-title {
+        font-size: 0.85rem;
+      }
+      .card-value {
+        font-size: 1.8rem;
+      }
+      .health-item {
+          font-size: 0.85rem;
+      }
+      .dashboard-footer {
+          flex-direction: column;
+          gap: 0.8rem;
+          padding: 0.8rem 1rem;
+      }
+      .status-message, .refresh-btn {
+          font-size: 0.8rem;
+      }
+      .music-player-floating {
+          bottom: 20px;
+          right: 20px; /* Kept consistent with new default */
+          width: 45px;
+          height: 45px;
+      }
+      .music-player-floating .music-toggle-btn {
+          width: 45px;
+          height: 45px;
+          font-size: 1.2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="particles-js"></div>
+  <div class="min-h-screen flex items-center justify-center p-2 sm:p-4">
+    <div class="dashboard-container">
+      <div class="dashboard-header">
+          <div class="header-left">
+            <img src="images/adiza.jpg" alt="MATRIX API Logo" class="header-logo">
+            <div>
+              <h1 class="header-title">MATRIX API</h1>
+              <p class="header-version">Api v9.0.1</p>
+            </div>
+          </div>
+          <button id="docs-btn" class="docs-btn">
+            <span>OPEN DOCS</span>
+            <i class="fas fa-arrow-right"></i>
+          </button>
+      </div>
+        
+      <div class="status-grid">
+          <div class="status-card">
+            <div class="card-header">
+              <h3 class="card-title">SERVER RUNTIME</h3>
+              <i class="fas fa-clock card-icon"></i>
+            </div>
+            <p id="runtime" class="card-value">--</p>
+          </div>
+          
+          <div class="status-card">
+            <div class="card-header">
+              <h3 class="card-title">SERVER RAM USAGE</h3>
+              <i class="fas fa-memory card-icon"></i>
+            </div>
+            <p id="memory" class="card-value">--</p>
+            <div class="progress-bar">
+              <div id="memory-progress" class="progress-fill" style="width: 0%"></div>
+            </div>
+          </div>
+          
+          <div class="status-card">
+            <div class="card-header">
+              <h3 class="card-title">TOTAL REQUESTS</h3>
+              <i class="fas fa-chart-bar card-icon"></i>
+            </div>
+            <p id="requests" class="card-value">--</p>
+            <div class="progress-bar">
+              <div id="requests-progress" class="progress-fill" style="width: 0%"></div>
+            </div>
+          </div>
+          
+          <div class="status-card">
+            <div class="card-header">
+              <h3 class="card-title">SYSTEM HEALTH</h3>
+              <i class="fas fa-heartbeat card-icon"></i>
+            </div>
+            <div class="system-health-details">
+              <div class="health-item">
+                <span class="health-label">Api Status:</span>
+                <span class="health-value">
+                  <div class="api-status-indicator"></div>
+                  <span id="api-health">Online</span>
+                </span>
+              </div>
+              <div class="health-item">
+                <span class="health-label">Response Rate:</span>
+                <span id="response-time" class="health-value">--</span>
+              </div>
+              <div class="health-item">
+                <span class="health-label">Last Refreshed:</span>
+                <span id="last-updated" class="health-value">Just now</span>
+              </div>
+            </div>
+          </div>
+      </div>
+      
+      <div class="dashboard-footer">
+        <p id="status-message" class="status-message">All Endpoints operational</p>
+        <button id="refresh-btn" class="refresh-btn">
+          <i class="fas fa-sync-alt"></i>
+          <span>Refresh</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="music-player-floating">
+      <audio id="backgroundMusic" autoplay loop>
+          <source src="/media/Beyonce.mp3" type="audio/mp3">
+          Your browser does not support the audio element.
+      </audio>
+      <button class="music-toggle-btn" id="toggleMusicFloating">
+          <i class="fas fa-pause"></i>
+      </button>
+  </div>
+
+  <script>
+    // Initialize particles.js with consistent settings
+    particlesJS('particles-js', {
+      "particles": {
+          "number": { "value": 80, "density": { "enable": true, "value_area": 800 } },
+          "color": { "value": "#00e6e6" },
+          "shape": { "type": "circle" },
+          "opacity": { "value": 0.5, "random": false },
+          "size": { "value": 3, "random": true },
+          "line_linked": { "enable": true, "distance": 150, "color": "#00e6e6", "opacity": 0.2, "width": 1 },
+          "move": { "enable": true, "speed": 2, "direction": "none", "random": false, "straight": false, "out_mode": "out", "bounce": false }
+      },
+      "interactivity": {
+          "detect_on": "canvas",
+          "events": { "onhover": { "enable": true, "mode": "grab" }, "onclick": { "enable": true, "mode": "push" }, "resize": true },
+          "modes": { "grab": { "distance": 140, "line_linked": { "opacity": 0.5 } }, "push": { "particles_nb": 4 } }
+      },
+      "retina_detect": true
+    });
+
+    // DOM Elements
+    const runtimeEl = document.getElementById('runtime');
+    const memoryEl = document.getElementById('memory');
+    const requestsEl = document.getElementById('requests');
+    const memoryProgress = document.getElementById('memory-progress');
+    const requestsProgress = document.getElementById('requests-progress');
+    const apiHealthEl = document.getElementById('api-health');
+    const responseTimeEl = document.getElementById('response-time');
+    const lastUpdatedEl = document.getElementById('last-updated');
+    const statusMessageEl = document.getElementById('status-message');
+    const docsBtn = document.getElementById('docs-btn');
+    const refreshBtn = document.getElementById('refresh-btn');
+    
+    // Music Player Elements
+    const audio = document.getElementById('backgroundMusic');
+    const toggleMusicFloatingBtn = document.getElementById('toggleMusicFloating');
+    let isMusicPlaying = false; // Initial state for music
+
+    // Global variable to keep track of simulated uptime and requests
+    let simulatedStartTime = new Date(); // Start time for simulated uptime
+    let simulatedTotalRequests = 1500000; // Start with a high number
+    let lastUpdateTime = new Date(); // To track when the dashboard was last updated
+
+    // Helper to format uptime
+    function formatUptime(startTime) {
+        const diffSeconds = Math.floor((new Date() - startTime) / 1000);
+        const days = Math.floor(diffSeconds / (3600 * 24));
+        const hours = Math.floor((diffSeconds % (3600 * 24)) / 3600);
+        const minutes = Math.floor((diffSeconds % 3600) / 60);
+        const seconds = diffSeconds % 60;
+
+        let uptimeString = '';
+        if (days > 0) uptimeString += `${days}d `;
+        if (hours > 0) uptimeString += `${hours}h `;
+        if (minutes > 0) uptimeString += `${minutes}m `;
+        uptimeString += `${seconds}s`;
+        return uptimeString.trim();
+    }
+    
+    // Format time difference
+    function formatTimeDifference(date) {
+      const seconds = Math.floor((new Date() - date) / 1000);
+      if (seconds < 60) return `${seconds} seconds ago`;
+      const minutes = Math.floor(seconds / 60);
+      if (minutes < 60) return `${minutes} minute${minutes === 1 ? '' : 's'} ago`;
+      const hours = Math.floor(minutes / 60);
+      return `${hours} hour${hours === 1 ? '' : 's'} ago`;
+    }
+    
+    // Function to generate simulated data
+    function generateSimulatedData() {
+        // Simulated Runtime (continuously increasing)
+        const runtime = formatUptime(simulatedStartTime);
+
+        // Simulated Memory Usage (fluctuating within a range)
+        const totalMemoryGB = 20; // Changed to 20GB
+        const minUsedMemoryGB = 4; // Adjusted min to be reasonable for 20GB
+        const maxUsedMemoryGB = 12; // Adjusted max to be reasonable for 20GB
+        const usedMemoryGB = (Math.random() * (maxUsedMemoryGB - minUsedMemoryGB) + minUsedMemoryGB).toFixed(1);
+        const memory = `${usedMemoryGB} GB / ${totalMemoryGB} GB`;
+        const memoryPercent = (parseFloat(usedMemoryGB) / totalMemoryGB) * 100;
+
+        // Simulated Total Requests (continuously increasing)
+        const requestsIncrement = Math.floor(Math.random() * 50) + 1; // Add 1 to 50 requests per second
+        simulatedTotalRequests += requestsIncrement;
+        const totalRequests = simulatedTotalRequests.toLocaleString(); // Format with commas
+
+        // Simulated Response Time (fluctuating within a healthy range)
+        const responseTime = (Math.random() * (80 - 30) + 30).toFixed(2); // 30-80ms
+
+        return {
+            runtime: runtime,
+            memory: memory,
+            memoryPercent: memoryPercent,
+            totalRequests: totalRequests,
+            responseTime: responseTime,
+            apiHealth: 'Online',
+            statusMessage: 'All Endpoints operational'
+        };
+    }
+
+    // Update dashboard with simulated data
+    function updateDashboardUI(data) {
+        runtimeEl.textContent = data.runtime;
+        memoryEl.textContent = data.memory;
+        requestsEl.textContent = data.totalRequests;
+        responseTimeEl.textContent = `${data.responseTime}ms`;
+        lastUpdatedEl.textContent = formatTimeDifference(lastUpdateTime); // Keep last update real
+
+        // Update memory progress
+        memoryProgress.style.width = `${data.memoryPercent}%`;
+        if (data.memoryPercent > 80) {
+            memoryProgress.style.background = 'linear-gradient(90deg, var(--status-danger), var(--status-warning))';
+        } else if (data.memoryPercent > 60) {
+            memoryProgress.style.background = 'linear-gradient(90deg, var(--status-warning), var(--color-accent))';
+        } else {
+            memoryProgress.style.background = 'linear-gradient(90deg, var(--color-primary), var(--color-secondary))';
+        }
+
+        // Update requests progress (based on a fixed high activity for visual)
+        const fixedRequestsProgress = 70; 
+        requestsProgress.style.width = `${fixedRequestsProgress}%`;
+        requestsProgress.style.background = 'linear-gradient(90deg, var(--color-primary), var(--color-secondary))'; // Always healthy color
+
+        // Update status
+        apiHealthEl.textContent = data.apiHealth;
+        statusMessageEl.textContent = data.statusMessage;
+        statusMessageEl.style.color = 'var(--status-success)'; // Set color directly for consistency
+    }
+    
+    // Main update function
+    function updateStatus() {
+        lastUpdateTime = new Date(); // Update 'Last Refreshed' time
+        const simulatedData = generateSimulatedData();
+        updateDashboardUI(simulatedData);
+    }
+
+    // Music Player Functionality
+    function updateMusicButtonIcon(isPlaying) {
+        const iconClass = isPlaying ? 'fas fa-pause' : 'fas fa-play';
+        toggleMusicFloatingBtn.innerHTML = `<i class="${iconClass}"></i>`;
+    }
+
+    function toggleMusic() {
+        if (isMusicPlaying) {
+            audio.pause();
+        } else {
+            audio.play();
+        }
+        isMusicPlaying = !isMusicPlaying;
+        updateMusicButtonIcon(isMusicPlaying);
+    }
+
+    // Initialize Dashboard and Music
+    function initDashboard() {
+        // Load initial data
+        updateStatus();
+
+        // Set up regular updates every second
+        setInterval(updateStatus, 1000); // Update every second
+
+        // Docs button event
+        docsBtn.addEventListener('click', () => {
+            window.location.href = './docs'; // Ensure this path is correct for your project structure
+        });
+
+        // Refresh button event
+        refreshBtn.addEventListener('click', () => {
+            updateStatus();
+        });
+
+        // Add glow effect on card click (from original)
+        document.querySelectorAll('.status-card').forEach(card => {
+            card.addEventListener('click', function() {
+                this.style.boxShadow = '0 0 30px rgba(0, 240, 255, 0.6)';
+                setTimeout(() => {
+                    this.style.boxShadow = ''; // Reset to default via CSS rule
+                }, 300);
+            });
+        });
+
+        // Music player setup
+        audio.play().then(() => {
+            isMusicPlaying = true;
+            updateMusicButtonIcon(true);
+        }).catch(e => {
+            console.log("Autoplay prevented:", e);
+            isMusicPlaying = false;
+            updateMusicButtonIcon(false);
+        });
+
+        toggleMusicFloatingBtn.addEventListener('click', toggleMusic);
+    }
+    
+    // Start the dashboard
+    initDashboard();
+  </script>
+
+</body>
+</html>
