@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Matrix Premium API - Service | IMAGES DOCS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Matrix Premium API - Service Images Api Endpoints - Developer Resources">
+    <link href="images/queenzy.jpg" rel="icon"> <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="js/particles.min.js"></script> <style>
+        :root {
+            --primary: #00f7ff;
+            --secondary: #0066ff;
+            --accent: #7b00ff;
+            --dark: #0a0a1a;
+            --light: #ffffff;
+            --highlight: #ff00ff;
+            --sidebar-width: 280px;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        html {
+            overflow-x: hidden;
+        }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--dark);
+            color: var(--light);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        #particles-js {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(circle at center, rgba(0, 20, 40, 0.9) 0%, var(--dark) 100%);
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: rgba(10, 10, 30, 0.95);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid rgba(0, 247, 255, 0.2);
+            height: 100vh;
+            position: fixed;
+            z-index: 1000;
+            overflow-y: auto;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease, backdrop-filter 0.3s ease;
+        }
+        
+        .sidebar.active {
+            transform: translateX(0);
+        }
+        
+.sidebar-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    color: var(--light);
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 1001;
+    display: block !important; /* Force show on all screens */
+}
+
+/* No empty ruleset for .sidebar-close in this media query */
+@media (min-width: 992px) {
+}
+        
+        .sidebar-close:hover {
+            color: var(--primary);
+            transform: rotate(90deg);
+        }
+        
+        .profile {
+            padding: 30px 20px 20px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid rgba(0, 247, 255, 0.2);
+        }
+        
+        .profile-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid var(--primary);
+            object-fit: cover;
+            margin-right: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .profile-img:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(0, 247, 255, 0.5);
+        }
+        
+        .profile-info h5 {
+            margin: 0;
+            color: var(--light);
+            font-size: 1rem;
+        }
+        
+        .profile-info p {
+            margin: 0;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.8rem;
+        }
+        
+        .nav-menu {
+            padding: 20px 0;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .nav-item:hover {
+            color: var(--light);
+            background: rgba(0, 247, 255, 0.1);
+        }
+        
+        .nav-item.active {
+            color: var(--primary);
+            background: rgba(0, 247, 255, 0.2);
+        }
+        
+        .nav-item i {
+            font-size: 1.2rem;
+            margin-right: 10px;
+            width: 24px;
+            text-align: center;
+        }
+        
+        .nav-item::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 100%;
+            background: var(--primary);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .nav-item:hover::before {
+            transform: scaleY(1);
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-left: 0;
+            flex: 1;
+            padding-top: 70px;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        
+        .page-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .page-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* Top Navigation */
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: rgba(10, 10, 30, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            z-index: 900;
+        }
+        
+        .menu-toggle {
+            font-size: 1.5rem;
+            color: var(--light);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .menu-toggle:hover {
+            color: var(--primary);
+        }
+        
+        .page-title {
+            font-size: 1.2rem;
+            color: var(--light);
+            margin: 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .page-title img {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        
+        /* Dashboard Content */
+        .dashboard-section {
+            background: rgba(20, 20, 40, 0.6);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(0, 247, 255, 0.2);
+        }
+        
+        .section-title {
+            font-size: 1.2rem;
+            color: var(--primary);
+            margin: 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title i {
+            margin-right: 10px;
+        }
+        
+        /* Table Styles */
+        .table-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            color: var(--light);
+            min-width: 600px;
+        }
+        
+        .table thead th {
+            background: rgba(0, 247, 255, 0.1);
+            color: var(--primary);
+            font-weight: 600;
+            padding: 15px;
+            text-align: left;
+            border-bottom: 2px solid rgba(0, 247, 255, 0.3);
+        }
+        
+        .table tbody tr {
+            transition: all 0.3s ease;
+        }
+        
+        .table tbody tr:hover {
+            background: rgba(0, 247, 255, 0.1);
+        }
+        
+        .table tbody td {
+            padding: 15px;
+            border-bottom: 1px solid rgba(0, 247, 255, 0.1);
+            vertical-align: middle;
+        }
+        
+        .endpoint-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .endpoint-method {
+            background: rgba(0, 247, 255, 0.1);
+            color: var(--primary);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-family: monospace;
+            float: right;
+        }
+        
+        .btn {
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn i {
+            margin-right: 5px;
+        }
+        
+        .btn-success {
+    background: rgba(0, 200, 83, 0.2);
+    color: #00c853;
+    border: 1px solid #00c853;
+    animation: blink 1.5s infinite ease-in-out;
+    transition: all 0.3s ease;
+}
+
+@keyframes blink {
+    0%, 100% {
+        opacity: 1;
+        box-shadow: 0 0 0 rgba(0, 200, 83, 0);
+    }
+    50% {
+        opacity: 0.7;
+        box-shadow: 0 0 10px rgba(0, 200, 83, 0.5); /* Optional glow effect */
+    }
+}
+        
+        .btn-primary {
+    background: rgba(0, 123, 255, 0.2);
+    color: var(--primary);
+    border: 1px solid var(--primary);
+    animation: gentleShake 3s infinite ease-in-out;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: rgba(0, 123, 255, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+    animation: gentleShakeHover 3s infinite ease-in-out;
+}
+
+@keyframes gentleShake {
+    0%, 100% {
+        transform: translateX(0) rotate(0deg);
+    }
+    25% {
+        transform: translateX(-1px) rotate(-0.3deg);
+    }
+    50% {
+        transform: translateX(1px) rotate(0.3deg);
+    }
+    75% {
+        transform: translateX(-0.5px) rotate(-0.2deg);
+    }
+}
+
+@keyframes gentleShakeHover {
+    0%, 100% {
+        transform: translateX(0) rotate(0deg) translateY(-2px);
+    }
+    25% {
+        transform: translateX(-1px) rotate(-0.3deg) translateY(-2px);
+    }
+    50% {
+        transform: translateX(1px) rotate(0.3deg) translateY(-2px);
+    }
+    75% {
+        transform: translateX(-0.5px) rotate(-0.2deg) translateY(-2px);
+    }
+}
+        
+        .status-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-container {
+            background: rgba(20, 20, 40, 0.95);
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 247, 255, 0.3);
+            border: 1px solid rgba(0, 247, 255, 0.3);
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+        }
+        
+        .modal-overlay.active .modal-container {
+            transform: translateY(0);
+        }
+        
+        .modal-header {
+            padding: 15px 20px;
+            background: rgba(0, 247, 255, 0.1);
+            border-bottom: 1px solid rgba(0, 247, 255, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            margin: 0;
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--light);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-close:hover {
+            color: var(--primary);
+            transform: rotate(90deg);
+        }
+        
+        .modal-body {
+            padding: 20px;
+            overflow-y: auto;
+            max-height: 60vh;
+        }
+        
+        .endpoint-url {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 10px 15px;
+            margin-bottom: 20px;
+            font-family: monospace;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .endpoint-url span {
+            overflow-x: auto;
+            white-space: nowrap;
+            margin-right: 10px;
+        }
+        
+        .btn-copy-url {
+            background: rgba(0, 247, 255, 0.1);
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+        
+        .btn-copy-url:hover {
+            background: rgba(0, 247, 255, 0.2);
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--primary);
+            font-size: 0.9rem;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 247, 255, 0.2);
+            border-radius: 8px;
+            color: var(--light);
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 10px rgba(0, 247, 255, 0.3);
+        }
+        
+        .modal-footer {
+            padding: 15px 20px;
+            background: rgba(0, 247, 255, 0.1);
+            border-top: 1px solid rgba(0, 247, 255, 0.2);
+            display: flex;
+            justify-content: flex-end;
+        }
+        
+       .btn-test {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: var(--dark);
+    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    animation: gentleShake 2s infinite ease-in-out;
+}
+
+.btn-test:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 247, 255, 0.4);
+    animation: none; /* Optional: stops shaking on hover */
+}
+
+@keyframes gentleShake {
+    0%, 100% {
+        transform: translateX(0) rotate(0deg);
+    }
+    25% {
+        transform: translateX(-2px) rotate(-0.5deg);
+    }
+    50% {
+        transform: translateX(2px) rotate(0.5deg);
+    }
+    75% {
+        transform: translateX(-1px) rotate(-0.3deg);
+    }
+}
+        
+        .response-container {
+            margin-top: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            position: relative;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .response-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .response-title {
+            margin: 0;
+            color: var(--primary);
+            font-size: 1rem;
+        }
+        
+        .btn-copy {
+            background: rgba(0, 247, 255, 0.1);
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-copy:hover {
+            background: rgba(0, 247, 255, 0.2);
+        }
+        
+        .response-content {
+            font-family: monospace;
+            white-space: pre-wrap;
+            color: var(--light);
+            font-size: 0.9rem;
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+        }
+        
+        .footer a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Responsive Adjustments */
+        @media (min-width: 992px) {
+            .main-content {
+                margin-left: var(--sidebar-width);
+            }
+            
+            .sidebar {
+                transform: translateX(0);
+            }
+            
+            .menu-toggle {
+                display: none;
+            }
+            
+            .sidebar-close {
+                display: block;
+            }
+            
+            .page-overlay {
+                display: none !important;
+            }
+        }
+        
+        @media (max-width: 991px) {
+            .table {
+                min-width: 100%;
+            }
+            
+            .table thead {
+                display: none;
+            }
+            
+            .table tbody tr {
+                display: block;
+                margin-bottom: 15px;
+                border: 1px solid rgba(0, 247, 255, 0.2);
+                border-radius: 8px;
+            }
+            
+            .table tbody td {
+                display: block;
+                padding: 10px 15px;
+                border-bottom: 1px solid rgba(0, 247, 255, 0.1);
+            }
+            
+            .table tbody td::before {
+                content: attr(data-label);
+                font-weight: bold;
+                color: var(--primary);
+                margin-bottom: 5px;
+                display: block;
+            }
+            
+            .endpoint-method {
+                float: none;
+                display: inline-block;
+                margin-top: 5px;
+            }
+            
+            .status-actions {
+                justify-content: flex-start;
+                gap: 10px;
+            }
+        }
+        
+        /* Disable scrolling when sidebar is open */
+        body.sidebar-open {
+            overflow: hidden;
+            height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div>
+    
+    <div class="page-overlay"></div>
+    
+    <div class="sidebar">
+        <div class="sidebar-close">&times;</div>
+        
+        <div class="profile">
+            <img src="images/queenzy.jpg" alt="Matrix Premium API - Service  " class="profile-img">
+            <div class="profile-info">
+                <h5>Matrix Premium API - Service  </h5>
+                <p>Made in Ghana 🇬🇭</p>
+            </div>
+        </div>
+        
+               <div class="nav-menu">
+            <a href="docs/index.html" class="nav-item">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Documentation</span>
+            </a>
+            <a href="ai.html" class="nav-item">
+                <i class="fas fa-robot"></i>
+                <span>AI</span>
+            </a>
+           <a href="tools.html" class="nav-item">
+                <i class="fas fa-tools"></i>
+                <span>Tools</span>
+            </a>
+            <a href="search.html" class="nav-item">
+            <i class="fas fa-search"></i>
+                <span>Search</span>
+            </a>
+            <a href="tempmail.html" class="nav-item">
+                <i class="fas fa-envelope"></i>
+                <span>Tempmail</span>
+            </a>
+            <a href="downloader.html" class="nav-item">
+                <i class="fas fa-download"></i>
+                <span>Downloader</span>
+            </a>
+            <a href="#" class="nav-item active"> <i class="fas fa-image"></i>
+                <span>Images</span>
+            </a>
+        </div>
+    </div>
+    
+    <div class="main-content">
+        <div class="top-nav">
+            <div class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+            <h2 class="page-title">
+                <img src="images/queenzy.jpg" alt="Matrix API Logo">
+                Matrix Premium API - Service  
+            </h2>
+            <div></div> </div>
+        
+        <div class="dashboard-section">
+            <div class="section-header">
+                <h3 class="section-title"><i class="fas fa-image"></i> Images Api Endpoints</h3>
+            </div>
+            
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>DESCRIPTION</th>
+                            <th>REQUIRED</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    
+                    
+                    
+<tr>
+    <td data-label="">
+        <div class="endpoint-name">IMAGE GENERATOR</div>
+        <div class="endpoint-method">GET, IMAGE</div>
+    </td>
+    <td data-label="DESCRIPTION">Generate 4K images from text prompts (No watermark)</td>
+    <td data-label="">
+        <div class="status-actions">
+            <button type="button" class="btn btn-success">
+                <i class="fas fa-check-circle"></i> Active
+            </button>
+            <button
+                class="btn btn-primary test-btn"
+                onclick="window.open('https://adiza-image-generator.matrixzat99.workers.dev/?prompt=a%20happy%20dog%20running%20in%20a%20field', '_blank')"
+            >
+                <i class="fas fa-bolt"></i> Test
+            </button>
+        </div>
+    </td>
+</tr>
+
+
+
+
+
+
+
+                                                       
+                                                     
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2025 - 2030 <a href="https://whatsapp.com/channel/0029Vb5JJ438kyyGlFHTyZ0n">Matrix Premium API - Service  </a> | All Rights Reserved</p>
+        </div>
+    </div>
+    
+    <script>
+    // Initialize particles.js
+    particlesJS("particles-js", {
+        "particles": {
+            "number": {
+                "value": 80,
+                "density": {
+                    "enable": true,
+                    "value_area": 800
+                }
+            },
+            "color": {
+                "value": "#00f7ff"
+            },
+            "shape": {
+                "type": "circle",
+                "stroke": {
+                    "width": 0,
+                    "color": "#000000"
+                }
+            },
+            "opacity": {
+                "value": 0.5,
+                "random": false,
+                "anim": {
+                    "enable": false,
+                    "speed": 1,
+                    "opacity_min": 0.1,
+                    "sync": false
+                }
+            },
+            "size": {
+                "value": 3,
+                "random": true,
+                "anim": {
+                    "enable": false,
+                    "speed": 40,
+                    "size_min": 0.1,
+                    "sync": false
+                }
+            },
+            "line_linked": {
+                "enable": true,
+                "distance": 150,
+                "color": "#00f7ff",
+                "opacity": 0.2,
+                "width": 1
+            },
+            "move": {
+                "enable": true,
+                "speed": 2,
+                "direction": "none",
+                "random": false,
+                "straight": false,
+                "out_mode": "out",
+                "bounce": false,
+                "attract": {
+                    "enable": false,
+                    "rotateX": 600,
+                    "rotateY": 1200
+                }
+            }
+        },
+        "interactivity": {
+            "detect_on": "canvas",
+            "events": {
+                "onhover": {
+                    "enable": true,
+                    "mode": "grab"
+                },
+                "onclick": {
+                    "enable": true,
+                    "mode": "push"
+                },
+                "resize": true
+            },
+            "modes": {
+                "grab": {
+                    "distance": 140,
+                    "line_linked": {
+                        "opacity": 0.5
+                    }
+                },
+                "push": {
+                    "particles_nb": 4
+                }
+            }
+        },
+        "retina_detect": true
+    });
+
+    // Sidebar toggle functionality
+    const menuToggle = document.querySelector('.menu-toggle');
+    const sidebar = document.querySelector('.sidebar');
+    const sidebarClose = document.querySelector('.sidebar-close');
+    const pageOverlay = document.querySelector('.page-overlay');
+
+    function openSidebar() {
+        sidebar.classList.add('active');
+        pageOverlay.classList.add('active');
+        document.body.classList.add('sidebar-open');
+    }
+
+    function closeSidebar() {
+        sidebar.classList.remove('active');
+        pageOverlay.classList.remove('active');
+        document.body.classList.remove('sidebar-open');
+    }
+
+    function toggleSidebar() {
+        if (sidebar.classList.contains('active')) {
+            closeSidebar();
+        } else {
+            openSidebar();
+        }
+    }
+
+    // Event listeners
+    menuToggle.addEventListener('click', toggleSidebar);
+    sidebarClose.addEventListener('click', closeSidebar);
+    pageOverlay.addEventListener('click', closeSidebar);
+
+    // Handle responsive behavior
+    function handleResponsive() {
+        if (window.innerWidth >= 992) {
+            // Desktop - always show sidebar, hide overlay
+            sidebar.classList.add('active');
+            pageOverlay.classList.remove('active');
+            document.body.classList.remove('sidebar-open');
+        } else {
+            // Mobile - hide sidebar by default
+            sidebar.classList.remove('active');
+        }
+    }
+
+    // Initialize and watch for resize
+    handleResponsive();
+    window.addEventListener('resize', handleResponsive);
+
+    // Test Endpoint Modal
+    const testButtons = document.querySelectorAll('.test-btn');
+    const testModal = document.getElementById('testModal');
+    const modalClose = document.getElementById('modalClose');
+    const executeTest = document.getElementById('executeTest');
+    const responseContainer = document.getElementById('responseContainer');
+    const responseContent = document.getElementById('responseContent');
+    const copyResponse = document.getElementById('copyResponse');
+    const apiKeyInput = document.getElementById('apiKey');
+    const dynamicFields = document.getElementById('dynamicFields');
+    const endpointUrl = document.getElementById('endpointUrl');
+    const copyEndpointUrl = document.getElementById('copyEndpointUrl');
+    const endpointUrlContainer = document.getElementById('endpointUrlContainer');
+    
+    let currentEndpoint = '';
+    let currentParams = {};
+
+    testButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            currentEndpoint = button.dataset.endpoint;
+            currentParams = JSON.parse(button.dataset.params);
+            
+            // Set API key from params if available
+            apiKeyInput.value = currentParams.apikey || '';
+            
+            // Generate dynamic fields
+            dynamicFields.innerHTML = '';
+            for (const key in currentParams) {
+                if (key !== 'apikey') {
+                    const formGroup = document.createElement('div');
+                    formGroup.className = 'form-group';
+                    
+                    const label = document.createElement('label');
+                    label.className = 'form-label';
+                    label.textContent = key.charAt(0).toUpperCase() + key.slice(1);
+                    label.htmlFor = key;
+                    
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'form-control';
+                    input.id = key;
+                    input.placeholder = `Enter ${key}`;
+                    input.value = currentParams[key];
+                    
+                    formGroup.appendChild(label);
+                    formGroup.appendChild(input);
+                    dynamicFields.appendChild(formGroup);
+                }
+            }
+            
+            // Update endpoint URL display
+            updateEndpointUrl();
+            
+            // Hide response container
+            responseContainer.style.display = 'none';
+            
+            // Show modal
+            testModal.classList.add('active');
+        });
+    });
+
+    modalClose.addEventListener('click', () => {
+        testModal.classList.remove('active');
+    });
+
+    function updateEndpointUrl() {
+        const params = { apikey: apiKeyInput.value };
+        const inputs = dynamicFields.querySelectorAll('.form-control');
+        
+        inputs.forEach(input => {
+            params[input.id] = input.value;
+        });
+
+        const currentDomain = window.location.hostname;
+        // Handle localhost case
+        const apiBase = currentDomain === 'localhost' 
+            ? 'http://localhost:3000' 
+            : `https://${currentDomain}`;
+        
+        const queryString = new URLSearchParams(params).toString();
+        endpointUrl.textContent = `${apiBase}/api/ai/${currentEndpoint}?${queryString}`;
+    }
+
+    // Update endpoint URL when inputs change
+    apiKeyInput.addEventListener('input', updateEndpointUrl);
+    document.addEventListener('input', function(e) {
+        if (e.target.classList.contains('form-control')) {
+            updateEndpointUrl();
+        }
+    });
+
+    executeTest.addEventListener('click', async () => {
+        // Get all parameter values
+        const params = { apikey: apiKeyInput.value };
+        const inputs = dynamicFields.querySelectorAll('.form-control');
+        
+        inputs.forEach(input => {
+            params[input.id] = input.value;
+        });
+        
+        // Build URL using the same logic as displayed
+        const currentDomain = window.location.hostname;
+        const apiBase = currentDomain === 'localhost' 
+            ? 'http://localhost:3000' 
+            : `https://${currentDomain}`;
+        const queryString = new URLSearchParams(params).toString();
+        const url = `${apiBase}/api/ai/${currentEndpoint}?${queryString}`;
+        
+        try {
+            // Show loading state
+            executeTest.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+            executeTest.disabled = true;
+            
+            // Make API call
+            const response = await fetch(url);
+            const data = await response.json();
+            
+            // Display response
+            responseContent.textContent = JSON.stringify(data, null, 2);
+            responseContainer.style.display = 'block';
+            
+            // Don't auto-scroll, let user scroll manually
+        } catch (error) {
+            responseContent.textContent = `Error: ${error.message}`;
+            responseContainer.style.display = 'block';
+        } finally {
+            executeTest.innerHTML = '<i class="fas fa-play"></i> Test Endpoint';
+            executeTest.disabled = false;
+        }
+    });
+
+    // Improved copy functionality with fallback
+    async function copyToClipboard(text, buttonElement) {
+        try {
+            await navigator.clipboard.writeText(text);
+            const originalHTML = buttonElement.innerHTML;
+            buttonElement.innerHTML = '<i class="fas fa-check"></i> Copied!';
+            setTimeout(() => {
+                buttonElement.innerHTML = originalHTML;
+            }, 2000);
+        } catch (err) {
+            console.error('Failed to copy: ', err);
+            // Fallback for older browsers
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            
+            const originalHTML = buttonElement.innerHTML;
+            buttonElement.innerHTML = '<i class="fas fa-check"></i> Copied!';
+            setTimeout(() => {
+                buttonElement.innerHTML = originalHTML;
+            }, 2000);
+        }
+    }
+
+    copyResponse.addEventListener('click', () => {
+        copyToClipboard(responseContent.textContent, copyResponse);
+    });
+
+    copyEndpointUrl.addEventListener('click', () => {
+        copyToClipboard(endpointUrl.textContent, copyEndpointUrl);
+    });
+
+    // Close modal when clicking outside
+    testModal.addEventListener('click', (e) => {
+        if (e.target === testModal) {
+            testModal.classList.remove('active');
+        }
+    });
+
+    // Initialize table row numbers
+    document.addEventListener('DOMContentLoaded', function() {
+        const rows = document.querySelectorAll('tbody tr');
+        rows.forEach((row, index) => {
+            const th = row.querySelector('th[scope="row"]');
+            if (th) {
+                th.textContent = index + 1;
+            }
+        });
+    });
+</script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon='{"rayId":"950233605d5ce89f","version":"2025.6.2","r":1,"token":"dc8e39ce56104f028adfa7bec49f6798","serverTiming":{"name":{"cfExtPri":true,"cfEdge":true,"cfOrigin":true,"cfL4":true,"cfSpeedBrain":true,"cfCacheStatus":true}}}' crossorigin="anonymous"></script>
+</body>
+</html>
