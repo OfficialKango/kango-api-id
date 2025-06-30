@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MATRIX-API | STATUS DASHBOARD</title>
+  <link rel="shortcut icon" href="images/queenzy.jpg" type="image/x-icon">
+  <link rel="manifest" href="/manifest.json">
+  <link href="css/tailwind.min.css" rel="stylesheet">
+  <script src="js/particles.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* Define CSS Variables for theming */
+    :root {
+      --primary: #00f0ff;
+      --secondary: #8a2be2;
+      --accent: #ff00ff;
+      --success: #00ff88;
+      --warning: #ffaa00;
+      --danger: #ff3860;
+
+      /* Dark Mode Defaults */
+      --bg-body: #0a0a12;
+      --bg-particles-bottom: #0d0d1a;
+      --bg-particles-top: #000000;
+      --bg-dashboard: rgba(10, 10, 20, 0.8);
+      --bg-card: rgba(20, 20, 30, 0.6);
+      --text-primary: #e2e8f0;
+      --text-secondary: #a0aec0; /* For less prominent text like 'Api v9.0.1', 'Api Status' etc. */
+      --border-color-dashboard: rgba(138, 43, 226, 0.2);
+      --box-shadow-dashboard: rgba(0, 240, 255, 0.1);
+      --card-border-color: rgba(138, 43, 226, 0.1);
+      --card-border-hover: rgba(138, 43, 226, 0.3);
+      --card-shadow-hover: rgba(0, 240, 255, 0.2);
+      --progress-bar-bg: rgba(138, 43, 226, 0.1);
+      --footer-border: rgba(138, 43, 226, 0.9); /* Changed from purple-900 directly to a variable */
+      --footer-bg: rgba(0, 0, 0, 0.2);
+    }
+
+    /* Light Mode Variables */
+    .light-mode {
+      --bg-body: #f0f0f7;
+      --bg-particles-bottom: #e0e0e0;
+      --bg-particles-top: #f8f8f8;
+      --bg-dashboard: rgba(240, 240, 250, 0.8);
+      --bg-card: rgba(255, 255, 255, 0.8);
+      --text-primary: #333;
+      --text-secondary: #555;
+      --border-color-dashboard: rgba(0, 0, 0, 0.1);
+      --box-shadow-dashboard: rgba(0, 0, 0, 0.05);
+      --card-border-color: rgba(0, 0, 0, 0.05);
+      --card-border-hover: rgba(0, 0, 0, 0.15);
+      --card-shadow-hover: rgba(0, 0, 0, 0.1);
+      --progress-bar-bg: rgba(0, 0, 0, 0.05);
+      --footer-border: rgba(0, 0, 0, 0.1);
+      --footer-bg: rgba(200, 200, 200, 0.2);
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      min-height: 100vh;
+      background: var(--bg-body);
+      color: var(--text-primary);
+      overflow-x: hidden;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+    
+    #particles-js {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      background: radial-gradient(ellipse at bottom, var(--bg-particles-bottom) 0%, var(--bg-particles-top) 100%);
+      transition: background 0.3s ease;
+    }
+    
+    .dashboard-container {
+      background: var(--bg-dashboard);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-color-dashboard);
+      box-shadow: 0 0 40px var(--box-shadow-dashboard);
+      width: 95%;
+      max-width: 800px;
+      border-radius: 16px;
+      overflow: hidden;
+      position: relative;
+      margin: 1rem auto;
+      transition: background 0.3s ease, border 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .status-card {
+      background: var(--bg-card);
+      border-radius: 12px;
+      border: 1px solid var(--card-border-color);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      padding: 1rem;
+      transition: background 0.3s ease, border 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .status-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      opacity: 0.3;
+    }
+    
+    .status-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 25px var(--card-shadow-hover);
+      border-color: var(--card-border-hover);
+    }
+    
+    .status-card:active {
+      transform: translateY(-2px);
+      box-shadow: 0 0 30px var(--card-shadow-hover); /* Increased for more prominent click */
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    
+    .floating {
+      animation: float 6s ease-in-out infinite;
+    }
+    
+    .progress-bar {
+      height: 6px;
+      background: var(--progress-bar-bg);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 0.5rem;
+      transition: background 0.3s ease;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      transition: width 0.5s ease, background 0.3s ease;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+    
+    .pulse {
+      animation: pulse 2s infinite;
+    }
+    
+    .api-status {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: var(--success);
+      box-shadow: 0 0 10px var(--success);
+      animation: pulse 1.5s infinite;
+    }
+    
+    @keyframes neon-glow {
+      0%, 100% { text-shadow: 0 0 5px var(--primary), 0 0 10px var(--primary); }
+      50% { text-shadow: 0 0 10px var(--primary), 0 0 20px var(--primary); }
+    }
+    
+    .neon-text {
+      animation: neon-glow 3s ease-in-out infinite;
+    }
+
+    /* Adjust text colors for light mode */
+    .light-mode .text-purple-300 { color: var(--text-secondary); }
+    .light-mode .text-blue-300 { color: var(--text-secondary); }
+    .light-mode .text-white { color: var(--text-primary); }
+    .light-mode .api-status { box-shadow: 0 0 5px var(--success); } /* Less intense glow for light mode */
+    .light-mode .neon-text { animation: none; color: var(--primary); } /* Disable neon glow in light mode, use primary color */
+
+    .docs-btn {
+      background: linear-gradient(45deg, var(--primary), var(--secondary));
+      color: black;
+      font-weight: bold;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.5);
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+    }
+    
+    .docs-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 25px rgba(0, 240, 255, 0.8);
+    }
+    
+    .docs-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: 0.5s;
+    }
+    
+    .docs-btn:hover::before {
+      left: 100%;
+    }
+
+    /* Music Player Styles */
+    .music-player {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        background: var(--bg-dashboard);
+        backdrop-filter: blur(8px);
+        border: 1px solid var(--border-color-dashboard);
+        border-radius: 10px;
+        padding: 10px 15px;
+        box-shadow: 0 0 20px var(--box-shadow-dashboard);
+        transition: background 0.3s ease, border 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .music-player audio {
+        display: none; /* Hide the default audio controls */
+    }
+
+    .music-btn {
+        background: linear-gradient(45deg, var(--primary), var(--secondary));
+        color: black;
+        font-weight: bold;
+        border: none;
+        border-radius: 5px;
+        padding: 8px 12px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+    }
+
+    .music-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0 15px rgba(0, 240, 255, 0.5);
+    }
+
+    .music-btn i {
+        font-size: 16px;
+    }
+    
+    /* Animated text styles */
+    .animated-description {
+      font-family: 'Roboto Mono', monospace; /* More thematic font */
+      font-size: 1.25rem; /* Increased font size */
+      font-weight: 500;
+      text-align: center;
+      line-height: 1.6; /* Improved line spacing */
+      padding: 1rem 0; /* Add some padding */
+      color: var(--text-primary); /* Ensure it respects theme */
+      transition: color 0.3s ease;
+    }
+
+    .animated-description span.word {
+      display: inline-block; /* Ensure each word is a block for animation */
+      animation: multicolor-animate 10s infinite alternate; /* Slower, smoother animation */
+      /* Each word can have a slightly different animation-delay for a wave effect */
+    }
+
+    /* Keyframes for multi-color text animation */
+    @keyframes multicolor-animate {
+      0% { color: var(--primary); }
+      16% { color: var(--secondary); }
+      33% { color: var(--accent); }
+      50% { color: var(--success); }
+      66% { color: var(--warning); }
+      83% { color: var(--danger); }
+      100% { color: var(--primary); }
+    }
+
+    /* Dark/Light Mode Toggle */
+    .theme-toggle-container {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      z-index: 10;
+    }
+
+    .theme-toggle-btn {
+      background: none;
+      border: none;
+      color: var(--text-primary);
+      cursor: pointer;
+      font-size: 1.2rem;
+      padding: 0.25rem;
+      opacity: 0.7;
+      transition: opacity 0.3s ease, color 0.3s ease;
+    }
+
+    .theme-toggle-btn:hover {
+      opacity: 1;
+    }
+
+    /* Network I/O Styling */
+    .network-io-container {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .network-io-icon {
+      font-size: 0.875rem;
+      color: var(--primary); /* Using primary color for icons */
+    }
+
+    /* Footer border and background */
+    .dashboard-footer {
+      border-top: 1px solid var(--footer-border);
+      background: var(--footer-bg);
+      transition: border-color 0.3s ease, background 0.3s ease;
+    }
+
+    /* New: Region list specific styles */
+    .region-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.25rem 0;
+    }
+    .region-name {
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+    }
+    .region-percent {
+        font-weight: bold;
+        color: var(--text-primary);
+        font-size: 0.875rem;
+    }
+
+    /* Mobile-specific styles */
+    @media (max-width: 640px) {
+      .dashboard-container {
+        width: 100%;
+        border-radius: 0;
+      }
+      
+      .status-card {
+        padding: 0.75rem;
+      }
+      
+      .status-card h3 {
+        font-size: 0.875rem;
+      }
+      
+      .status-card p {
+        font-size: 1.25rem;
+      }
+      
+      .flex.items-center.space-x-4 {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+      
+      .flex.justify-between.items-center {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+      }
+      
+      #docs-btn {
+        width: 100%;
+        justify-content: center;
+      }
+      
+      .grid.grid-cols-1.md\:grid-cols-2 {
+        gap: 0.75rem;
+      }
+
+      .music-player {
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: calc(100% - 20px);
+        justify-content: center;
+      }
+
+      .animated-description {
+        font-size: 1rem; /* Adjust font size for mobile */
+      }
+
+      .theme-toggle-container {
+        top: 0.5rem;
+        right: 0.5rem;
+      }
+    }
+
+    /* UPDATED PWA Install Button Styles */
+    .install-app-btn-container {
+        display: flex; /* Always visible */
+        justify-content: center;
+        margin-top: 20px;
+        padding-bottom: 20px;
+    }
+
+    .install-app-btn {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: black;
+        font-weight: bold;
+        padding: 12px 25px;
+        border-radius: 10px;
+        border: none;
+        cursor: pointer;
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 5px 15px rgba(0, 240, 255, 0.3);
+        transition: all 0.3s ease;
+    }
+
+    .install-app-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 240, 255, 0.4);
+    }
+
+    .install-app-btn i {
+        font-size: 1.3rem;
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body>
+  <div id="particles-js"></div>
+  <div class="min-h-screen flex items-center justify-center p-2 sm:p-4">
+    <div class="dashboard-container floating">
+      <div class="theme-toggle-container">
+        <button id="theme-toggle" class="theme-toggle-btn">
+          <i id="theme-icon" class="fas fa-moon"></i>
+        </button>
+      </div>
+      <div class="p-4 sm:p-6 relative">
+        <div class="flex items-center justify-between mb-6">
+          <div class="flex items-center space-x-2 sm:space-x-4">
+            <img src="images/adiza.jpg" alt="MATRIX API Logo" class="w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 border-purple-500">
+            <div>
+              <h1 class="text-xl sm:text-2xl font-bold neon-text">MATRIX API</h1>
+              <p class="text-blue-300 text-sm sm:text-base">Api v9.0.1</p>
+            </div>
+          </div>
+          <button id="docs-btn" class="docs-btn rounded-md flex items-center space-x-2">
+            <span>OPEN DOCUMENTATION</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </button>
+        </div>
+        
+        <p class="animated-description">
+          <span class="word" style="animation-delay: 0s;">Unleash</span> 
+          <span class="word" style="animation-delay: 0.2s;">the</span> 
+          <span class="word" style="animation-delay: 0.4s;">Matrix's</span> 
+          <span class="word" style="animation-delay: 0.6s;">potential</span> 
+          <span class="word" style="animation-delay: 0.8s;">with</span> 
+          <span class="word" style="animation-delay: 1s;">our</span> 
+          <span class="word" style="animation-delay: 1.2s;">free,</span> 
+          <span class="word" style="animation-delay: 1.4s;">JSON-friendly</span> 
+          <span class="word" style="animation-delay: 1.6s;">APIs.</span> 
+          <span class="word" style="animation-delay: 1.8s;">Seamlessly</span> 
+          <span class="word" style="animation-delay: 2s;">integrate</span> 
+          <span class="word" style="animation-delay: 2.2s;">into</span> 
+          <span class="word" style="animation-delay: 2.4s;">your</span> 
+          <span class="word" style="animation-delay: 2.6s;">bots,</span> 
+          <span class="word" style="animation-delay: 2.8s;">websites,</span> 
+          <span class="word" style="animation-delay: 3s;">and</span> 
+          <span class="word" style="animation-delay: 3.2s;">projects.</span>
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-5">
+          <div class="status-card">
+            <div class="flex items-center justify-between mb-2 sm:mb-4">
+              <h3 class="font-semibold text-purple-300 text-sm sm:text-base">SERVER RUNTIME</h3>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-blue-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <div class="flex items-end space-x-2">
+              <p id="runtime" class="text-xl sm:text-2xl md:text-3xl font-bold text-white">--</p>
+            </div>
+          </div>
+          
+          <div class="status-card">
+            <div class="flex items-center justify-between mb-2 sm:mb-4">
+              <h3 class="font-semibold text-purple-300 text-sm sm:text-base">SERVER RAM USAGE</h3>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-blue-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+              </svg>
+            </div>
+            <div class="mb-1 sm:mb-2">
+              <p id="memory" class="text-xl sm:text-2xl font-bold text-white">--</p>
+            </div>
+            <div class="progress-bar">
+              <div id="memory-progress" class="progress-fill" style="width: 0%"></div>
+            </div>
+          </div>
+
+          <div class="status-card">
+            <div class="flex items-center justify-between mb-2 sm:mb-4">
+              <h3 class="font-semibold text-purple-300 text-sm sm:text-base">SERVER CPU USAGE</h3>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-blue-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M12 5l7 7-7 7"></path>
+              </svg>
+            </div>
+            <div class="mb-1 sm:mb-2">
+              <p id="cpu-usage" class="text-xl sm:text-2xl font-bold text-white">--</p>
+            </div>
+            <div class="progress-bar">
+              <div id="cpu-progress" class="progress-fill" style="width: 0%"></div>
+            </div>
+          </div>
+          
+          <div class="status-card">
+            <div class="flex items-center justify-between mb-2 sm:mb-4">
+              <h3 class="font-semibold text-purple-300 text-sm sm:text-base">NETWORK I/O</h3>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-blue-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 01-8 0m8-4a4 4 0 00-8 0m-4 4a4 4 0 118 0m0-4a4 4 0 108 0"></path>
+              </svg>
+            </div>
+            <div class="space-y-1">
+              <div class="flex justify-between items-center">
+                <span class="text-blue-200 text-sm sm:text-base">Inbound:</span>
+                <div class="network-io-container">
+                  <i class="fas fa-download network-io-icon"></i>
+                  <span id="network-in" class="font-medium text-white text-sm sm:text-base">--</span>
+                </div>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-blue-200 text-sm sm:text-base">Outbound:</span>
+                <div class="network-io-container">
+                  <i class="fas fa-upload network-io-icon"></i>
+                  <span id="network-out" class="font-medium text-white text-sm sm:text-base">--</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="status-card">
+            <div class="flex items-center justify-between mb-2 sm:mb-4">
+              <h3 class="font-semibold text-purple-300 text-sm sm:text-base">API USAGE OVERVIEW</h3>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-blue-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H2v-2a3 3 0 015.356-1.857M17 20v-2c0-.653-.178-1.293-.46-1.889M2 17V20h3M2 17H.644c-.653 0-1.293.178-1.889.46L0 17zM17 20h5v-2a3 3 0 00-5.356-1.857M17 20H2v-2a3 3 0 015.356-1.857"></path>
+              </svg>
+            </div>
+            <div class="space-y-2 sm:space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-blue-200 text-sm sm:text-base">Unique Users (24h):</span>
+                <span id="unique-users-24h" class="font-medium text-white text-sm sm:text-base">--</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-blue-200 text-sm sm:text-base">Unique Users (7d):</span>
+                <span id="unique-users-7d" class="font-medium text-white text-sm sm:text-base">--</span>
+              </div>
+              <div class="mt-4 mb-2">
+                <span class="text-blue-200 text-sm sm:text-base font-semibold">Top Regions:</span>
+                <div id="top-regions-list" class="mt-1 space-y-1">
+                  </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="status-card">
+            <div class="flex items-center justify-between mb-2 sm:mb-4">
+              <h3 class="font-semibold text-purple-300 text-sm sm:text-base">TOTAL REQUESTS</h3>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-blue-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+              </svg>
+            </div>
+            <div class="mb-1 sm:mb-2">
+              <p id="requests" class="text-xl sm:text-2xl font-bold text-white">--</p>
+            </div>
+            <div class="progress-bar">
+              <div id="requests-progress" class="progress-fill" style="width: 0%"></div>
+            </div>
+          </div>
+          
+          <div class="status-card">
+            <div class="flex items-center justify-between mb-2 sm:mb-4">
+              <h3 class="font-semibold text-purple-300 text-sm sm:text-base">SYSTEM HEALTH</h3>
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-blue-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+              </svg>
+            </div>
+            <div class="space-y-2 sm:space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-blue-200 text-sm sm:text-base">Api Status:</span>
+                <div class="flex items-center space-x-2">
+                  <div class="api-status"></div>
+                  <span id="api-health" class="font-medium text-white text-sm sm:text-base">Online</span>
+                </div>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-blue-200 text-sm sm:text-base">Response Rate:</span>
+                <span id="response-time" class="font-medium text-white text-sm sm:text-base">--</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-blue-200 text-sm sm:text-base">Last Refreshed:</span>
+                <span id="last-updated" class="font-medium text-white text-sm sm:text-base">Just now</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="dashboard-section install-app-btn-container" id="installAppSection">
+          <button id="installAppButton" class="install-app-btn">
+              <i class="fas fa-download"></i> Install Matrix API Dashboard App
+          </button>
+      </div>
+      <div class="dashboard-footer p-3 sm:p-4 flex flex-col sm:flex-row justify-between items-center bg-black bg-opacity-20 gap-2">
+        <p id="status-message" class="text-xs sm:text-sm text-blue-300">All Endpoints operational</p>
+        <button id="refresh-btn" class="text-blue-300 hover:text-white px-2 py-1 sm:px-3 sm:py-1 rounded-md flex items-center space-x-1 transition-colors text-xs sm:text-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+          </svg>
+          <span>Refresh</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="music-player">
+        <audio id="backgroundMusic" autoplay loop>
+        <source src="/media/Beyonce.mp3" type="audio/mp3">
+        </audio>
+        <button id="toggleMusic" class="music-btn">
+            <i class="fas fa-pause"></i>
+            <span>Pause Music</span>
+        </button>
+    </div>
+
+  <script>
+    // Initialize particles.js with futuristic settings
+    particlesJS('particles-js', {
+      particles: {
+        number: { 
+          value: 80, 
+          density: { enable: true, value_area: 800 } 
+        },
+        color: { value: "#00f0ff" },
+        shape: { type: "circle" },
+        opacity: { 
+          value: 0.7, 
+          random: true,
+          anim: { enable: true, speed: 1, opacity_min: 0.1, sync: false }
+        },
+        size: { 
+          value: 3, 
+          random: true,
+          anim: { enable: true, speed: 2, size_min: 0.1, sync: false }
+        },
+        line_linked: { 
+          enable: true, 
+          distance: 150, 
+          color: "#8a2be2", 
+          opacity: 0.4, 
+          width: 1 
+        },
+        move: { 
+          enable: true, 
+          speed: 2, 
+          direction: "none", 
+          random: true, 
+          straight: false, 
+          out_mode: "out", 
+          bounce: false, 
+          attract: { enable: false, rotateX: 600, rotateY: 1200 } 
+        }
+      },
+      interactivity: {
+        detect_on: "canvas",
+        events: {
+          onhover: { enable: true, mode: "repulse" },
+          onclick: { enable: true, mode: "push" },
+          resize: true
+        },
+        modes: {
+          repulse: { distance: 100, duration: 0.4 },
+          push: { particles_nb: 4 }
+        }
+      }
+    });
+
+    // DOM Elements
+    const bodyEl = document.body;
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    const themeIcon = document.getElementById('theme-icon');
+    const runtimeEl = document.getElementById('runtime');
+    const memoryEl = document.getElementById('memory');
+    const cpuEl = document.getElementById('cpu-usage');
+    const networkInEl = document.getElementById('network-in');
+    const networkOutEl = document.getElementById('network-out');
+    const requestsEl = document.getElementById('requests');
+    const uniqueUsers24hEl = document.getElementById('unique-users-24h'); // New
+    const uniqueUsers7dEl = document.getElementById('unique-users-7d');   // New
+    const topRegionsListEl = document.getElementById('top-regions-list'); // New
+    const memoryProgress = document.getElementById('memory-progress');
+    const cpuProgress = document.getElementById('cpu-progress');
+    const requestsProgress = document.getElementById('requests-progress');
+    const apiHealthEl = document.getElementById('api-health');
+    const responseTimeEl = document.getElementById('response-time');
+    const lastUpdatedEl = document.getElementById('last-updated');
+    const statusMessageEl = document.getElementById('status-message');
+    const docsBtn = document.getElementById('docs-btn');
+    const refreshBtn = document.getElementById('refresh-btn');
+    const backgroundMusic = document.getElementById('backgroundMusic');
+    const toggleMusicBtn = document.getElementById('toggleMusic');
+
+    // Global variable to keep track of simulated uptime and requests
+    let simulatedStartTime = new Date(); // Start time for simulated uptime
+    let simulatedTotalRequests = 1500000; // Start with a high number
+    let lastUpdateTime = new Date(); // To track 'Last Refreshed'
+
+    // Helper to format uptime
+    function formatUptime(startTime) {
+        const diffSeconds = Math.floor((new Date() - startTime) / 1000);
+        const days = Math.floor(diffSeconds / (3600 * 24));
+        const hours = Math.floor((diffSeconds % (3600 * 24)) / 3600);
+        const minutes = Math.floor((diffSeconds % 3600) / 60);
+        const seconds = diffSeconds % 60;
+
+        let uptimeString = '';
+        if (days > 0) uptimeString += `${days}d `;
+        if (hours > 0) uptimeString += `${hours}h `;
+        if (minutes > 0) uptimeString += `${minutes}m `;
+        uptimeString += `${seconds}s`;
+        return uptimeString.trim();
+    }
+    
+    // Format time difference
+    function formatTimeDifference(date) {
+      const seconds = Math.floor((new Date() - date) / 1000);
+      if (seconds < 60) return `${seconds} seconds ago`;
+      const minutes = Math.floor(seconds / 60);
+      if (minutes < 60) return `${minutes} minute${minutes === 1 ? '' : 's'} ago`;
+      const hours = Math.floor(minutes / 60);
+      if (hours < 24) return `${hours} hour${hours === 1 ? '' : 's'} ago`;
+      const days = Math.floor(hours / 24);
+      return `${days} day${days === 1 ? '' : 's'} ago`;
+    }
+    
+    // Function to generate simulated data
+    function generateSimulatedData() {
+        // Simulated Runtime (continuously increasing)
+        const runtime = formatUptime(simulatedStartTime);
+
+        // Simulated Memory Usage (fluctuating within a range)
+        const totalMemoryGB = 20;
+        const minUsedMemoryGB = 4;
+        const maxUsedMemoryGB = 12;
+        const usedMemoryGB = (Math.random() * (maxUsedMemoryGB - minUsedMemoryGB) + minUsedMemoryGB).toFixed(1);
+        const memory = `${usedMemoryGB} GB / ${totalMemoryGB} GB`;
+        const memoryPercent = (parseFloat(usedMemoryGB) / totalMemoryGB) * 100;
+
+        // Simulated CPU Usage (fluctuating within a range)
+        const minCpuPercent = 10;
+        const maxCpuPercent = 70;
+        const cpuUsagePercent = (Math.random() * (maxCpuPercent - minCpuPercent) + minCpuPercent).toFixed(1);
+
+        // Simulated Network I/O (MB/s)
+        const networkIn = (Math.random() * (50 - 5) + 5).toFixed(2); // 5-50 MB/s
+        const networkOut = (Math.random() * (30 - 2) + 2).toFixed(2); // 2-30 MB/s
+
+        // Simulated Total Requests (continuously increasing)
+        const requestsIncrement = Math.floor(Math.random() * 50) + 1; // Add 1 to 50 requests per second
+        simulatedTotalRequests += requestsIncrement;
+        const totalRequests = simulatedTotalRequests.toLocaleString(); // Format with commas
+
+        // Simulated Response Time (fluctuating within a healthy range)
+        const responseTime = (Math.random() * (80 - 30) + 30).toFixed(2); // 30-80ms
+
+        // New: Simulated Unique Users
+        const uniqueUsers24h = (Math.floor(Math.random() * (5000 - 3000)) + 3000).toLocaleString(); // 3k-5k
+        const uniqueUsers7d = (Math.floor(Math.random() * (25000 - 15000)) + 15000).toLocaleString(); // 15k-25k
+
+        // New: Simulated Top User Regions
+        const regions = [
+            { name: 'North America', base_percent: 40 },
+            { name: 'Europe', base_percent: 28 },
+            { name: 'Asia', base_percent: 18 },
+            { name: 'Africa', base_percent: 7 },
+            { name: 'South America', base_percent: 4 },
+            { name: 'Other', base_percent: 3 }
+        ];
+
+        let simulatedRegions = regions.map(r => {
+            const fluctuation = (Math.random() - 0.5) * 5; // +/- 2.5%
+            let newPercent = r.base_percent + fluctuation;
+            newPercent = Math.max(0, Math.min(100, newPercent)); // Ensure between 0 and 100
+            return { name: r.name, percent: newPercent.toFixed(1) };
+        });
+
+        // Normalize percentages so they sum to ~100% after fluctuation
+        let totalPercent = simulatedRegions.reduce((sum, r) => sum + parseFloat(r.percent), 0);
+        simulatedRegions = simulatedRegions.map(r => ({
+            name: r.name,
+            percent: ((parseFloat(r.percent) / totalPercent) * 100).toFixed(1) // Re-normalize to 100%
+        }));
+        
+        // Sort regions by percentage descending
+        simulatedRegions.sort((a, b) => parseFloat(b.percent) - parseFloat(a.percent));
+
+
+        return {
+            runtime: runtime,
+            memory: memory,
+            memoryPercent: memoryPercent,
+            cpuUsage: `${cpuUsagePercent}%`,
+            cpuPercent: parseFloat(cpuUsagePercent),
+            networkIn: `${networkIn} MB/s`,
+            networkOut: `${networkOut} MB/s`,
+            totalRequests: totalRequests,
+            responseTime: responseTime,
+            uniqueUsers24h: uniqueUsers24h,
+            uniqueUsers7d: uniqueUsers7d,
+            topUserRegions: simulatedRegions,
+            apiHealth: 'Online',
+            statusMessage: 'All Endpoints operational'
+        };
+    }
+
+    // Function to update progress bar style based on percentage
+    function updateProgressBar(progressEl, percent) {
+        progressEl.style.width = `${percent}%`;
+        if (percent > 80) {
+            progressEl.style.background = 'linear-gradient(90deg, var(--danger), var(--warning))';
+        } else if (percent > 60) {
+            progressEl.style.background = 'linear-gradient(90deg, var(--warning), var(--accent))';
+        } else {
+            progressEl.style.background = 'linear-gradient(90deg, var(--primary), var(--secondary))';
+        }
+    }
+
+    // Update dashboard with simulated data
+    function updateDashboardUI(data) {
+        runtimeEl.textContent = data.runtime;
+        memoryEl.textContent = data.memory;
+        cpuEl.textContent = data.cpuUsage;
+        networkInEl.textContent = data.networkIn;
+        networkOutEl.textContent = data.networkOut;
+        requestsEl.textContent = data.totalRequests;
+        responseTimeEl.textContent = `${data.responseTime}ms`;
+        lastUpdatedEl.textContent = formatTimeDifference(lastUpdateTime);
+
+        // Update new enhanced usage metrics
+        uniqueUsers24hEl.textContent = data.uniqueUsers24h;
+        uniqueUsers7dEl.textContent = data.uniqueUsers7d;
+
+        // Update Top Regions List
+        topRegionsListEl.innerHTML = ''; // Clear previous list
+        data.topUserRegions.forEach(region => {
+            const regionDiv = document.createElement('div');
+            regionDiv.className = 'region-item';
+            regionDiv.innerHTML = `
+                <span class="region-name">${region.name}:</span>
+                <span class="region-percent">${region.percent}%</span>
+            `;
+            topRegionsListEl.appendChild(regionDiv);
+        });
+
+        // Update progress bars
+        updateProgressBar(memoryProgress, data.memoryPercent);
+        updateProgressBar(cpuProgress, data.cpuPercent); 
+
+        const fixedRequestsProgress = 70; // Visual placeholder for requests progress
+        requestsProgress.style.width = `${fixedRequestsProgress}%`;
+        requestsProgress.style.background = 'linear-gradient(90deg, var(--primary), var(--secondary))'; 
+
+        // Update status
+        apiHealthEl.textContent = data.apiHealth;
+        statusMessageEl.textContent = data.statusMessage;
+        statusMessageEl.className = 'text-xs sm:text-sm text-blue-300';
+    }
+    
+    // Main update function
+    function updateStatus() {
+        lastUpdateTime = new Date();
+        const simulatedData = generateSimulatedData();
+        updateDashboardUI(simulatedData);
+    }
+
+    // Theme Toggle Functionality
+    function setInitialTheme() {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'light') {
+            bodyEl.classList.add('light-mode');
+            themeIcon.classList.remove('fa-moon');
+            themeIcon.classList.add('fa-sun');
+        } else {
+            bodyEl.classList.remove('light-mode');
+            themeIcon.classList.remove('fa-sun');
+            themeIcon.classList.add('fa-moon');
+        }
+    }
+
+    function toggleTheme() {
+        if (bodyEl.classList.contains('light-mode')) {
+            bodyEl.classList.remove('light-mode');
+            themeIcon.classList.remove('fa-sun');
+            themeIcon.classList.add('fa-moon');
+            localStorage.setItem('theme', 'dark');
+        } else {
+            bodyEl.classList.add('light-mode');
+            themeIcon.classList.remove('fa-moon');
+            themeIcon.classList.add('fa-sun');
+            localStorage.setItem('theme', 'light');
+        }
+    }
+
+    // Initialize dashboard
+    function initDashboard() {
+        // Set theme based on local storage
+        setInitialTheme();
+
+        // Load initial data
+        updateStatus();
+
+        // Set up regular updates every second
+        setInterval(updateStatus, 1000);
+
+        // Docs button event
+        docsBtn.addEventListener('click', () => {
+            window.location.href = './docs'; 
+        });
+
+        // Refresh button event
+        refreshBtn.addEventListener('click', () => {
+            updateStatus();
+        });
+
+        // Add glow effect on card click
+        document.querySelectorAll('.status-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const originalBoxShadow = this.style.boxShadow;
+                this.style.boxShadow = '0 0 30px var(--card-shadow-hover)';
+                setTimeout(() => {
+                    this.style.boxShadow = originalBoxShadow;
+                }, 300);
+            });
+        });
+
+        // Music player functionality
+        toggleMusicBtn.addEventListener('click', () => {
+            if (backgroundMusic.paused) {
+                backgroundMusic.play();
+                toggleMusicBtn.innerHTML = '<i class="fas fa-pause"></i> <span>Pause Music</span>';
+            } else {
+                backgroundMusic.pause();
+                toggleMusicBtn.innerHTML = '<i class="fas fa-play"></i> <span>Play Music</span>';
+            }
+        });
+
+        // Theme toggle event listener
+        themeToggleBtn.addEventListener('click', toggleTheme);
+    }
+    
+    // Start the dashboard
+    initDashboard();
+
+    // UPDATED PWA Install App functionality for the Root index.html
+    let deferredPrompt;
+    const installAppButton = document.getElementById('installAppButton');
+    const installAppSection = document.getElementById('installAppSection'); // The container div
+
+    // Function to update the install button's UI and behavior
+    function updateInstallButtonUI() {
+        if (window.matchMedia('(display-mode: standalone)').matches || navigator.standalone) {
+            // App is already installed (standalone mode detected)
+            installAppButton.textContent = 'App Already Installed';
+            installAppButton.disabled = true; // Disable the button
+            installAppButton.style.opacity = '0.7';
+            installAppButton.style.cursor = 'default';
+            installAppButton.style.boxShadow = 'none';
+        } else if (deferredPrompt) {
+            // Install prompt available
+            installAppButton.innerHTML = '<i class="fas fa-download"></i> Install Matrix API Dashboard App';
+            installAppButton.disabled = false;
+            installAppButton.style.opacity = '1';
+            installAppButton.style.cursor = 'pointer';
+        } else {
+            // PWA not supported or prompt already dismissed
+            installAppButton.textContent = 'Install (Browser Menu)';
+            installAppButton.disabled = false; // Still allow click for alert
+            installAppButton.style.opacity = '0.8';
+            installAppButton.style.cursor = 'pointer';
+        }
+    }
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        // Now that the prompt is available, update the UI
+        updateInstallButtonUI();
+        console.log('beforeinstallprompt event fired on root page.');
+    });
+
+    installAppButton.addEventListener('click', async () => {
+        if (deferredPrompt) {
+            // Attempt to show the install prompt
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            deferredPrompt = null; // Prompt consumed
+            console.log(`User response to the install prompt: ${outcome}`);
+
+            // Update UI after user choice
+            updateInstallButtonUI();
+
+            if (outcome === 'accepted') {
+                console.log('User accepted the A2HS prompt from root page');
+                alert('Matrix API Dashboard installed successfully!');
+            } else {
+                console.log('User dismissed the A2HS prompt from root page');
+                alert('Installation cancelled.');
+            }
+        } else {
+            // Fallback if beforeinstallprompt hasn't fired or was consumed, or not supported
+            alert('To install this app, please use your browser\'s "Add to Home screen" or "Install App" option from the menu. If the app is already installed, this button becomes inactive.');
+            updateInstallButtonUI(); // Re-check state just in case
+        }
+    });
+
+    // Register Service Worker for the Root index.html
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/service-worker.js')
+                .then(registration => {
+                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    // Initial UI update after service worker registration
+                    updateInstallButtonUI();
+                })
+                .catch(err => {
+                    console.log('ServiceWorker registration failed: ', err);
+                    updateInstallButtonUI(); // Update UI even if SW fails
+                });
+        });
+    } else {
+        // Service Worker not supported
+        console.log('Service Workers are not supported by this browser.');
+        updateInstallButtonUI(); // Update UI if SW not supported
+    }
+
+    // Also update UI on initial load in case it's already installed or no prompt fires
+    window.addEventListener('DOMContentLoaded', updateInstallButtonUI);
+  </script>
+<script defer="" src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" data-cf-beacon='{"rayid":"95014c563cbd0e89","version":"2025.6.2","r":1,"token":"dc8e39ce56104f028adfa7bec49f6798","servertiming":{"name":{"cfextpri":true,"cfedge":true,"cforigin":true,"cfl4":true,"cfspeedbrain":true,"cfcachestatus":true}}}' crossorigin="anonymous"></script>
+
+
+</body>
+</html>
